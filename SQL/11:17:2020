@@ -1,0 +1,59 @@
+11/17/2020
+
+SQL Practice
+
+
+
+Problem 1 - Simple Joining of tables
+
+select FirstName, LastName, City, State from Person
+left join Address
+    on Person.PersonId = Address.PersonId;
+    
+
+Problem 1322 - using SUM(CASE WHEN ... THEN .. ELSE .. END) to group and count averages.
+
+ select ad_id, 
+       IFNULL(
+           ROUND(
+           SUM(CASE WHEN action = 'Clicked' THEN 1 ELSE 0 END)*100/ (SUM(CASE WHEN action = 'Clicked' THEN 1 ELSE 0 END) + SUM(CASE WHEN action = 'Viewed' THEN 1 ELSE 0 END))
+           ,2) 
+       , 0) as ctr 
+       from Ads
+group by ad_id
+order by ctr desc, ad_id asc;
+
+Problem 1322 more efficient - use avg for percentage with 1's and 0's.
+Replaced 0 with NULL in the else statement to discount any actions other than clicked and viewed in the avg calculation.
+
+select ad_id, 
+       IFNULL(
+           ROUND(
+           AVG(CASE WHEN action = 'Clicked' THEN 1 WHEN action = 'Viewed' THEN 0 ELSE NULL END)*100
+           ,2) 
+       , 0) as ctr 
+       from Ads
+group by ad_id
+order by ctr desc, ad_id asc;
+
+
+
+
+Problem 1565 - group by month in the date and get count of distinct orders and customers.
+
+select SUBSTRING(order_date,1,7) as month, count(distinct order_id) as order_count, count(distinct customer_id) as customer_count from Orders
+where invoice > 20
+group by month; 
+
+
+
+Problem 574 - get winning candidate by joining the tables.
+
+select Name from Candidate
+inner join Vote
+    on Candidate.id = Vote.CandidateId
+group by CandidateId
+order by COUNT(*) desc
+limit 1;
+
+
