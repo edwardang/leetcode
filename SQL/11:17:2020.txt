@@ -57,3 +57,27 @@ order by COUNT(*) desc
 limit 1;
 
 
+
+Problem 613 - Subtracting values from the same table itself. 
+
+select min(ABS(p1.x - p2.x)) as shortest
+from point p1, point p2
+where p1.x != p2.x;
+
+
+Problem 607 - Joining 3 tables and getting the inverse of the names you are searching for.
+
+#Pam also sold to 3, so you need another approach. Find all that sold to 1, and then take whoever is left. There can be duplicate orders. 
+#Also you need to find a way to join 3 tables.
+
+select name from salesperson
+where name not in (
+    select salesperson.name from salesperson
+    left join orders
+        on salesperson.sales_id = orders.sales_id
+    left join company
+        on orders.com_id = company.com_id
+    where company.name = 'RED'
+    );
+
+

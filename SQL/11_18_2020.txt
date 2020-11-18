@@ -1,0 +1,47 @@
+Problem 1075 - Selecting averages from a group by.
+
+select project_id,round(avg(experience_years),2) as average_years from Project
+inner join Employee
+    on Project.employee_id = Employee.employee_id
+group by project_id;
+
+
+
+Problem 1076 - First use of Rank function to get duplicates of the top ranked thing.
+Always have to name a new table when querying from it.
+When  you assign a new variable, you can only reference it outside of the query.
+
+Select project_id from (   
+    SELECT project_id, RANK () OVER (ORDER BY COUNT(employee_id) DESC) r
+    FROM project
+    GROUP BY project_id
+    ) Top_Rank
+where r = 1;
+
+
+Problem 1077 - use of dense_rank.
+3 functions for ranking: rank, dense_rank, and row_number.
+
+select project_id, employee_id from 
+    (select project_id, Project.employee_id, dense_rank() over(partition by project_id order by experience_years desc) r 
+    from Project
+    inner join Employee
+        on Project.employee_id = Employee.employee_id) t
+where r = 1;
+
+
+You can also subquery - select the project_id, experience_years which are in the max(experience_years) in a group by of the project_id
+This was my first intuition as well.
+
+SELECT project_id, employee_id
+FROM Project
+JOIN Employee
+USING(employee_id)
+
+WHERE (project_id, experience_years) IN (
+SELECT project_id,MAX(experience_years)
+FROM Project
+JOIN Employee
+USING(employee_id)
+GROUP BY project_id
+)
