@@ -1,0 +1,30 @@
+
+
+Problem 182 - Simple get duplicates
+
+select Email from Person
+group by Email
+having Count(*) > 1;
+
+
+Problem 1607 - Getting things not in a certain year.
+
+select seller_name from Seller
+where seller_name not in (
+    select seller_name from Seller
+    inner join Orders
+    using(seller_id)
+    where substring(sale_date,1,4) = '2020'
+)
+order by seller_name asc;
+
+
+
+Problem 1581 - counting people who didnt have transitions. Left join table with all the visits and then count based on the column in the transactions table where it is null from the left join (transaction_id)
+
+select customer_id,count(*) as count_no_trans from Transactions
+right join Visits
+using(visit_id)
+where transaction_id is NULL
+group by customer_id;
+

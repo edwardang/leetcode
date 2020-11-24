@@ -1,0 +1,33 @@
+
+Problem 1294 - Using case to aggregate, and then substring to get the november date.
+
+select country_name, (CASE WHEN AVG(weather_state) <= 15 THEN 'Cold'
+                          WHEN AVG(weather_state) >= 25 THEN 'Hot'
+                          ELSE 'Warm' END) weather_type
+from Weather
+inner join Countries
+using(country_id)
+where substring(day,1,7) = '2019-11'
+group by country_name;
+
+
+Problem 620
+select id, movie, description, rating from cinema
+where id%2=1 and description != 'boring'
+order by rating desc;
+
+
+Problem 1098 - This was a tough one.
+Have to use the if statement because you want to account for books in the Books table that are not in orders table,
+and they don't have a dispatch date or quantity, so you can't filter off the bat, you have to account for it later on
+in the having statement. If you filte rin the where statement, it will take it out first because it is null. 
+The if statement comes in clutch in the having statement as well. 
+
+# The tough part is to account for the nulls. 
+select book_id, name from books
+# left join because we want to get all books.
+left join Orders
+using(book_id)
+where available_from <= '2019-05-23'
+group by book_id
+having sum(if(dispatch_date>'2018-06-23',quantity,0)) < 10;

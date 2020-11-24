@@ -1,0 +1,25 @@
+
+Problem 1113
+
+MY solution
+
+Careful on the number of posts reported. Understand the problem and dataset before you start tackling the problem.
+I also think distinct may only work opn one column.
+
+select extra report_reason, count(distinct post_id) report_count from Actions
+where action_date = '2019-07-04' and action = 'report'
+group by extra
+having extra is not null and count(*) > 0;
+
+Other solution from discussions with DATEDIFF
+
+select extra report_reason, count(distinct post_id) report_count
+from actions
+where DATEDIFF('2019-07-05',action_date)=1
+and extra is not null and action = 'report'
+group by extra
+
+
+
+
+

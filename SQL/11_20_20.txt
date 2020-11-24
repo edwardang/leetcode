@@ -1,0 +1,48 @@
+
+Problem 1113
+
+MY solution
+
+Careful on the number of posts reported. Understand the problem and dataset before you start tackling the problem.
+I also think distinct may only work opn one column.
+
+select extra report_reason, count(distinct post_id) report_count from Actions
+where action_date = '2019-07-04' and action = 'report'
+group by extra
+having extra is not null and count(*) > 0;
+
+Other solution from discussions with DATEDIFF
+
+select extra report_reason, count(distinct post_id) report_count
+from actions
+where DATEDIFF('2019-07-05',action_date)=1
+and extra is not null and action = 'report'
+group by extra
+
+
+Problem 1045 - Bought ALL the products from the other table. So you jus tcount up the distinct products in product key and see which customers also have that count. 
+
+
+Unrelated - any & all in SQL query
+select product_key from Product
+where product_key < ANY (select product_key from Customer);
+
+
+My solution 
+select customer_id from Customer
+group by customer_id
+having count(distinct product_key) = (
+    select count(distinct product_key) from Product    
+);
+
+
+Other's solution: take sum of distinct key but there are holes in that, as some other numbers could potentially add up to that number.
+
+select customer_id 
+from customer
+group by customer_id
+having sum(distinct product_key)=
+(select sum(product_key) from product)
+
+
+But if the Product table didn't have all the products and only a subset, how would you solve it?

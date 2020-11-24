@@ -45,3 +45,36 @@ JOIN Employee
 USING(employee_id)
 GROUP BY project_id
 )
+
+
+
+Problem 1211 - Weird problem with a bunch of syntax issues
+Dont forget to put end in CASE, and dont forget to put sum when counting everything. 
+Important to note that when you use AGG functions (e.g. sum, avg, max, min) it will only return one value and will truncate the list to only returning one row on the conditions you put in place. 
+
+select query_name, round(sum(rating/position)/Count(*),2) as quality, round(AVG(CASE WHEN rating < 3 THEN 1 ELSE 0 END) *100,2) as poor_query_percentage 
+from Queries
+group by query_name;
+
+
+Problem 1633 - Getting the counts/information from two different tables and outputting a percentage
+
+# get overall number of users to divide the second metric by
+select contest_id, round(count(distinct r.user_id)*100/count(distinct u.user_id),2) percentage
+from Register r, Users u
+group by contest_id
+order by percentage desc, contest_id asc;
+
+
+
+
+
+
+
+
+
+
+
+
+
+

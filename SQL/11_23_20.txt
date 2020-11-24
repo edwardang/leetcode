@@ -1,0 +1,67 @@
+
+Problem 177 - First Function ???
+
+Did a dense_rank and a subquery because apparently you can't manipulate the input ???
+
+CREATE FUNCTION getNthHighestSalary(N INT) RETURNS INT
+BEGIN
+  RETURN (
+      # Write your MySQL query statement below.
+      select distinct Salary from (
+        select Salary, dense_rank() over(order by Salary desc) r from Employee
+      ) as t
+      where r = N
+  );
+END
+
+
+
+
+Problem 1107 
+
+Use MAX/MIN when you want to get the top or lowest value when you group by. I assume order by works after the group by. 
+
+with first_login as #Find first time each person logged in
+(select user_id, min(activity_date) activity_date from Traffic
+where activity = 'login'
+group by user_id)
+
+select activity_date login_date, count(*) user_count
+from first_login
+group by login_date
+having DATEDIFF('2019-06-30',login_date) <= 90;
+
+
+
+Problem 1212 - multiple subqueries, get the sum of all of the scores and then inner join at the end.
+
+with host_teams as (
+    select team_id, team_name, 
+        SUM(CASE WHEN host_goals > guest_goals THEN 3 WHEN host_goals = guest_goals THEN 1 ELSE 0 END) host_score
+    from Teams
+    left join Matches
+        on Teams.team_id = Matches.host_team
+    group by team_name
+),
+guest_teams as (
+    select team_id, team_name, 
+        SUM(CASE WHEN guest_goals > host_goals THEN 3 WHEN host_goals = guest_goals THEN 1 ELSE 0 END) guest_score
+    from Teams
+    left join Matches
+        on Teams.team_id = Matches.guest_team
+    group by team_name
+)
+
+select guest_teams.team_id, team_name, host_score+guest_score as num_points
+from guest_teams
+inner join host_teams
+using(team_name)
+order by num_points desc, team_id asc;
+
+
+
+
+
+
+
+

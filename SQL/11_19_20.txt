@@ -1,0 +1,88 @@
+
+Problem 1082 - ranking/subquerying again
+
+Two solutions, first one is mine, the other one was from discussion. Both subquerying, mine with rank, and the other with just max.
+Make sure to use distinct if questions say there can be duplicates. 
+
+select distinct seller_id from (
+    select seller_id, rank() over(order by sum(price) desc) as rk from Sales
+    inner join Product
+    Using(product_id)
+    group by seller_id
+) t
+where rk = 1;
+
+
+SELECT DISTINCT seller_id
+FROM Sales
+GROUP BY seller_id
+HAVING SUM(price) = (
+SELECT SUM(price) AS max_price
+FROM Sales
+GROUP BY seller_id
+ORDER BY max_price DESC
+LIMIT 1
+)
+
+Problem 1083 - Get customers that bought S8, but not iPhone, two separate queries in the where clause.
+
+select distinct buyer_id from Sales
+where buyer_id in (
+    select buyer_id from Sales
+    inner join Product
+    using(product_id)
+    where product_name = 'S8'
+)
+and buyer_id not in (
+    select buyer_id from Sales
+    inner join Product
+    using(product_id)
+    where product_name = 'iPhone'
+
+);
+
+
+or you can do having sum(case) on the individual cases. This was kind of what I was looking for.
+
+SELECT s.buyer_id
+FROM Sales AS s INNER JOIN Product AS p
+ON s.product_id = p.product_id
+GROUP BY s.buyer_id
+HAVING SUM(CASE WHEN p.product_name = 'S8' THEN 1 ELSE 0 END) > 0
+AND SUM(CASE WHEN p.product_name = 'iPhone' THEN 1 ELSE 0 END) = 0;
+
+or you can go off of intuition and query for the buyers who bought S8 first, you don't have to do two subqueries.
+
+SELECT distinct s.buyer_id
+    FROM sales s
+    JOIN product p
+    WHERE s.product_id = p.product_id
+    AND p.product_name = 'S8'
+AND s.buyer_id NOT IN
+(
+    SELECT distinct s.buyer_id
+    FROM sales s
+    JOIN product p
+    WHERE s.product_id = p.product_id
+    AND p.product_name = 'iPhone'
+)
+
+
+
+Problem 1084 - having sum(binary condition) > 1
+
+having is super useful. to counter the only having one row when you group by.
+
+select Sales.product_id, product_name from Sales
+inner join Product
+using(product_id)
+group by product_id
+having sum(sale_date >= '2019-01-01' and sale_date <= '2019-03-31') > 0
+and sum(sale_date < '2019-01-01' or sale_date > '2019-03-31') = 0;
+
+
+
+
+
+
+
